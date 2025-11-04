@@ -13,12 +13,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class LocationImageResource extends Resource
 {
     protected static ?string $model = LocationImage::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $navigationLabel = 'Images';
+
+    protected static ?string $modelLabel = 'Image';
 
     public static function form(Schema $schema): Schema
     {
@@ -44,5 +49,17 @@ class LocationImageResource extends Resource
             'create' => CreateLocationImage::route('/create'),
             'edit' => EditLocationImage::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        // Tour guides can only see their own images
+        if (auth()->user() && !auth()->user()->isAdmin()) {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query;
     }
 }
