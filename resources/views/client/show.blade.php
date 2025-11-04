@@ -176,7 +176,7 @@
     // Add marker
     L.marker([{{ $location->latitude }}, {{ $location->longitude }}])
         .addTo(map)
-        .bindPopup('<strong>{{ addslashes($location->name) }}</strong>')
+        .bindPopup('<strong>' + {!! json_encode($location->name) !!} + '</strong>')
         .openPopup();
 </script>
 @endpush
